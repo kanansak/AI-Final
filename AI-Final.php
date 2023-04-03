@@ -25,6 +25,7 @@
     }
     echo '<img src="' . $imgName . '">';
     echo "<br>";
+    //ระบบแปลงภาพเอกสารให้เป็นข้อความ ( Optical Character Recognition: T-OCR )
     $curl = curl_init();
     $img_file = $imgName;
     $data = array("uploadfile" => new CURLFile($img_file, mime_content_type($img_file), basename($img_file)));
@@ -39,8 +40,8 @@
         CURLOPT_CUSTOMREQUEST => "POST",
         CURLOPT_POSTFIELDS => $data,
         CURLOPT_HTTPHEADER => array(
-            "Content-Type: multipart/form-data",
-            "apikey: etTW2zhw5WLwgAoo2HkfnePopSOP52sJ",
+          "Content-Type: multipart/form-data",
+          "apikey: etTW2zhw5WLwgAoo2HkfnePopSOP52sJ"
         ),
     ));
 
@@ -52,17 +53,13 @@
     if ($err) {
         echo "cURL Error #:" . $err;
     } else {
+        $json_string = $ocr;
+        $json_string_ocr = str_replace(array("\n", "\r", "\t", ',', '\\','n','"'), ' ', $json_string);
         //echo $ocr;
-        $arr = json_decode($ocr, true);
+        //$arr = json_decode($ocr, true);
         //print_r($arr);
         echo "<br>";
-        array_walk_recursive($arr, function ($item, $key) {
-            //echo "$key holds $item"."<br>";
-            if ($key == "result") {
-                global $menu;
-                $menu = $item;
-            }
-        });
+        echo $json_string;
     }
     // เพิ่มโค้ด curl ในการเรียกใช้ API text cleansing
     $curl = curl_init();
@@ -90,35 +87,45 @@
     } else {
     //echo $cleansing;
     }
-//ระบบสรุปความภาษาภาไทย (Thai Text Summarization)
-
+    ///EmoNews
     $curl = curl_init();
-
-    curl_setopt_array($curl, array(
-        CURLOPT_URL => 'https://api.aiforthai.in.th/textsummarize',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 30,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => $cleansing,
-        CURLOPT_HTTPHEADER => array(
-            "Apikey: etTW2zhw5WLwgAoo2HkfnePopSOP52sJ"
-        )
-    ));
-    
-    $Summarization = curl_exec($curl);
-    $err = curl_error($curl);
-    
-    curl_close($curl);
-    
-    if ($err) {
-        echo 'cURL Error #:' . $err;
-    } else {
-        //echo $Summarization;
-    }
  
+    curl_setopt_array($curl, array(
+      CURLOPT_URL => "https://api.aiforthai.in.th/emonews/prediction?text=".urlencode($cleansing),
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => "",
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 30,  
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => "GET",
+      CURLOPT_HTTPHEADER => array(
+        "Apikey: etTW2zhw5WLwgAoo2HkfnePopSOP52sJ"
+      )
+    ));
+     
+    $EmoNews = curl_exec($curl);
+    $err = curl_error($curl);
+     
+    curl_close($curl);
+     
+    if ($err) {
+      echo "cURL Error #:" . $err;
+    } else {
+        $json_string = $EmoNews;
+        $json_string_EmoNews = str_replace(array("\n", "\r", "\t", ',', '\\','n','"'), ' ', $json_string);
+      //echo $EmoNews;
+      //$json_str = $EmoNews;
+      //$obj_EmoNews = json_decode(stripslashes($json_str));
+;
+      /*$text = $obj_EmoNews->text;
+      $surprise = $obj_EmoNews->result->surprise;
+      $neutral = $obj_EmoNews->result->neutral;
+      $sadness = $obj_EmoNews->result->sadness;
+      $pleasant = $obj_EmoNews->result->pleasant;
+      $fear = $obj_EmoNews->result->fear;
+      $anger = $obj_EmoNews->result->anger;
+      $joy = $obj_EmoNews->result->joy;*/
+    }
 ?>
     <div class="container-fluid">
         <div class="row">
@@ -126,7 +133,7 @@
                 <h4>ต้นฉบับ</h4>
                 <div class="card">
                     <div class="card-body">
-                        <p class="card-text">'<?php echo $ocr ?>'</p>
+                        <p class="card-text">'<?php echo $json_string_ocr ?>'</p>
                     </div>
                 </div>
             </div>
@@ -134,7 +141,7 @@
                 <h4>ผลลัพธ์</h4>
                 <div class="card">
                     <div class="card-body">
-                        <p class="card-text">'<?php echo $Summarization ?>'</p>
+                        <p class="card-text">'<?php echo $json_string_EmoNews ?>'</p>
                     </div>
                 </div>
             </div>

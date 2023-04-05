@@ -83,7 +83,7 @@ if (isset($_GET["message"])) {
                     <div class="card-body">
                         <p class="card-text">Result:</p>
                         <ul class="list-group">
-                          li class="list-group-item">Surprise: ' . $surprise_percentage . '%</li>
+                          <li class="list-group-item">Surprise: ' . $surprise_percentage . '%</li>
                           <li class="list-group-item">Neutral: ' . $neutral_percentage . '%</li>
                           <li class="list-group-item">Sadness: ' . $sadness_percentage . '%</li>
                           <li class="list-group-item">Pleasant: ' . $pleasant_percentage . '%</li>
@@ -98,32 +98,36 @@ if (isset($_GET["message"])) {
     }
 }
 //CUICUI Survey
-$curl = curl_init();
-$post_fields = json_encode(array("text" => $message));
-$curl = curl_init();
-curl_setopt_array($curl, array(
-    CURLOPT_URL => 'https://api.aiforthai.in.th/ai9-sentiment',
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_ENCODING => '',
-    CURLOPT_MAXREDIRS => 10,
-    CURLOPT_TIMEOUT => 0,
-    CURLOPT_FOLLOWLOCATION => true,
-    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-    CURLOPT_CUSTOMREQUEST => 'POST',
-    CURLOPT_POSTFIELDS => $post_fields,
-    CURLOPT_HTTPHEADER => array(
-        'apiKey: etTW2zhw5WLwgAoo2HkfnePopSOP52sJ',
-        'Content-Type: application/json',
-    ),
-));
-$CUICUI = curl_exec($curl);
-curl_close($curl);
-echo $CUICUI;
-echo '<script>console.log(' . json_encode($CUICUI) . ');</script>';
-
+if (isset($_GET["message"])) {
+  $message = $_GET["message"];
+  $curl = curl_init();
+  $post_fields = json_encode(array("text" => $message));
+  $curl = curl_init();
+  curl_setopt_array($curl, array(
+      CURLOPT_URL => 'https://api.aiforthai.in.th/ai9-sentiment',
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => '',
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_CUSTOMREQUEST => 'POST',
+      CURLOPT_POSTFIELDS => $post_fields,
+      CURLOPT_HTTPHEADER => array(
+          "apiKey: $Apikey",
+          'Content-Type: application/json',
+      ),
+  ));
+  $CUICUI = curl_exec($curl);
+  curl_close($curl);
+  echo $CUICUI;
+  echo '<script>console.log(' . json_encode($CUICUI) . ');</script>';
+}
 //เอสเซนส์ ระบบวิเคราะห์ความคิดเห็นจากข้อความ (Social Sensing: SSENSE)
-$curl = curl_init();
-curl_setopt_array($curl, array(
+if (isset($_GET["message"])) {
+  $message = $_GET["message"];
+  $curl = curl_init();
+  curl_setopt_array($curl, array(
     CURLOPT_URL => "https://api.aiforthai.in.th/ssense?text=" . urlencode($message),
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_ENCODING => "",
@@ -136,7 +140,7 @@ curl_setopt_array($curl, array(
     ),
 ));
 
-$response = curl_exec($curl);
+$response  = curl_exec($curl);
 $err = curl_error($curl);
 
 curl_close($curl);
@@ -144,12 +148,27 @@ curl_close($curl);
 if ($err) {
     echo "cURL Error #:" . $err;
 } else {
-    echo $SSENSE;
-    $SSENSE = json_decode($response,true);
-    
+    //echo $response ;
+    $SSENSE = json_decode($response ,true);
     echo '<script>console.log(' . json_encode($SSENSE) . ');</script>';
+    echo "Sentiment score: " . $SSENSE['sentiment']['score'] . "<br>";
+    echo "Sentiment polarity: " . $SSENSE['sentiment']['polarity'] . "<br>";
+    echo "Sentiment polarity-neg: " . $SSENSE['sentiment']['polarity-neg'] . "<br>";
+    echo "Sentiment polarity-pos: " . $SSENSE['sentiment']['polarity-pos'] . "<br>";
+    echo "Intention request: " . $SSENSE['intention']['request'] . "<br>";
+    echo "Intention sentiment: " . $SSENSE['intention']['sentiment'] . "<br>";
+    echo "Intention question: " . $SSENSE['intention']['question'] . "<br>";
+    echo "Intention announcement: " . $SSENSE['intention']['announcement'] . "<br>";
+    //echo "Input: " . $SSENSE['preprocess']['input'] . "<br>";
+    //echo "Neg: " . json_encode($SSENSE['preprocess']['neg']) . "<br>";
+    //echo "Pos: " . json_encode($SSENSE['preprocess']['pos']) . "<br>";
+    //echo "Segmented: " . json_encode($SSENSE['preprocess']['segmented']) . "<br>";
+    //echo "Keyword: " . json_encode($SSENSE['preprocess']['keyword']) . "<br>";
+    //echo "Alert: " . json_encode($SSENSE['alert']) . "<br>";
+    //echo "Comparative: " . json_encode($SSENSE['comparative']) . "<br>";
+    echo "Associative: " . json_encode($SSENSE['associative']) . "<br>";
 }
-
+}
 ?>
 </body>
 </html>

@@ -10,16 +10,23 @@
 </head>
 
 <body>
-    <div class="container mt-5">
-        <h1>AI การวิเคราะห์ข้อความ</h1>
-        <form action="" method="GET">
-            <div class="form-group">
-                <label for="message">ข้อความ</label>
-                <textarea class="form-control" id="message" name="message" rows="3"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">ส่งข้อความ</button>
-        </form>
-    </div>
+<div class="container mt-5">
+    <h1>AI การวิเคราะห์ข้อความ</h1>
+    <form action="" method="GET">
+        <div class="form-group">
+            <label for="message">ข้อความ (ไม่เกิน 1000 ตัวอักษร)</label>
+            <textarea class="form-control" id="message" name="message" rows="3" maxlength="1000"></textarea>
+            <p class="text-muted">จำนวนตัวอักษรที่ใส่ไป: <span id="charNum">0</span>/1000</p>
+        </div>
+        <button type="submit" class="btn btn-primary">ส่งข้อความ</button>
+    </form>
+</div>
+<script>
+    // เพิ่ม event listener ให้กับ textarea เพื่อนับจำนวนตัวอักษรที่ใส่ไป
+    document.getElementById("message").addEventListener("input", function() {
+        document.getElementById("charNum").textContent = this.value.length;
+    });
+</script>
 
     <!-- ติดตั้ง JavaScript ของ Bootstrap -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>

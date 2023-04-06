@@ -11,7 +11,7 @@
 
 <body>
     <div class="container mt-5">
-        <h1>รับข้อความ</h1>
+        <h1>AI การวิเคราะห์ข้อความ</h1>
         <form action="" method="GET">
             <div class="form-group">
                 <label for="message">ข้อความ</label>
@@ -26,16 +26,172 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
-    <?php
-
-if (isset($_GET["message"])) {
+<?php
     $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
-    $message = $_GET["message"];
 
-//EmoNews บริการทำนายอารมณ์ของผู้อ่าน หลังจากอ่านหัวข้อข่าว โดยใช้เทคนิค fastText
-    $curl = curl_init();
-    curl_setopt_array($curl, array(
-        CURLOPT_URL => "https://api.aiforthai.in.th/emonews/prediction?text=" . urlencode($message),
+    if (isset($_GET["message"])) {
+        $message = $_GET["message"];
+
+    //EmoNews บริการทำนายอารมณ์ของผู้อ่าน หลังจากอ่านหัวข้อข่าว โดยใช้เทคนิค fastText
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://api.aiforthai.in.th/emonews/prediction?text=" . urlencode($message),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => array(
+                "Apikey:$Apikey",
+            ),
+        ));
+
+        $EmoNews = curl_exec($curl);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($err) {
+            echo "cURL Error #:" . $err;
+        } else {
+            //echo $EmoNews;
+            $json_str = $EmoNews;
+            $obj_EmoNews = json_decode($json_str);
+            //echo '<script>console.log(' . json_encode($EmoNews) . ');</script>';
+            // Calculate total score
+            $total_score = $obj_EmoNews->result->surprise + $obj_EmoNews->result->neutral + $obj_EmoNews->result->sadness
+            + $obj_EmoNews->result->pleasant + $obj_EmoNews->result->fear + $obj_EmoNews->result->anger
+            + $obj_EmoNews->result->joy;
+            // Calculate percentages
+            $surprise_percentage = round(($obj_EmoNews->result->surprise / $total_score) * 100, 2);
+            $neutral_percentage = round(($obj_EmoNews->result->neutral / $total_score) * 100, 2);
+            $sadness_percentage = round(($obj_EmoNews->result->sadness / $total_score) * 100, 2);
+            $pleasant_percentage = round(($obj_EmoNews->result->pleasant / $total_score) * 100, 2);
+            $fear_percentage = round(($obj_EmoNews->result->fear / $total_score) * 100, 2);
+            $anger_percentage = round(($obj_EmoNews->result->anger / $total_score) * 100, 2);
+            $joy_percentage = round(($obj_EmoNews->result->joy / $total_score) * 100, 2);
+            echo '<div class="container-fluid">
+                <div class="container mt-5 mx-auto">
+                    <h4>ผลลัพธ์ EmoNews</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text">' . $obj_EmoNews->text . '</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text">Result:</p>
+                            <ul class="list-group">
+                            <li class="list-group-item">Surprise: ' . $surprise_percentage . '%</li>
+                            <li class="list-group-item">Neutral: ' . $neutral_percentage . '%</li>
+                            <li class="list-group-item">Sadness: ' . $sadness_percentage . '%</li>
+                            <li class="list-group-item">Pleasant: ' . $pleasant_percentage . '%</li>
+                            <li class="list-group-item">Fear: ' . $fear_percentage . '%</li>
+                            <li class="list-group-item">Anger: ' . $anger_percentage . '%</li>
+                            <li class="list-group-item">Joy: ' . $joy_percentage . '%</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>';
+        }
+    }
+    //เอสเซนส์ ระบบวิเคราะห์ความคิดเห็นจากข้อความ (Social Sensing: SSENSE)
+    if (isset($_GET["message"])) {
+        $message = $_GET["message"];
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://api.aiforthai.in.th/ssense?text=" . urlencode($message),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "GET",
+            CURLOPT_HTTPHEADER => array(
+                "Apikey: $Apikey",
+            ),
+        ));
+
+        $SSENSE  = curl_exec($curl);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($err) {
+            echo "cURL Error #:" . $err;
+        } else {
+            //echo $SSENSE ;
+            $obj_SSENSE = json_decode($SSENSE ,true);
+        //sentiment : ผลวิเคราะห์ความคิดเห็นว่าเป็นเชิงบวกหรือลบ
+            $sentiment_score = $obj_SSENSE['sentiment']['score'];
+            $sentiment_polarity = $obj_SSENSE['sentiment']['polarity'];
+            $sentiment_polarity_neg = $obj_SSENSE['sentiment']['polarity-neg'];
+            $sentiment_polarity_pos = $obj_SSENSE['sentiment']['polarity-pos'];
+        //intention : ผลวิเคราะห์จุดประสงค์ของข้อความ
+            $intention_request = $obj_SSENSE['intention']['request'];
+            $intention_sentiment = $obj_SSENSE['intention']['sentiment'];
+            $intention_question = $obj_SSENSE['intention']['question'];
+            $intention_announcement = $obj_SSENSE['intention']['announcement'];
+        //preprocess : ผลลัพธ์การจัดการข้อความก่อนวิเคราะห์
+            $input = $obj_SSENSE['preprocess']['input'];
+            $neg = ($obj_SSENSE['preprocess']['neg']);
+            $pos = ($obj_SSENSE['preprocess']['pos']);
+            $segmented = $obj_SSENSE['preprocess']['segmented'];
+            $keyword = $obj_SSENSE['preprocess']['keyword'];
+        //alert : array ของข้อความที่แสดงการแจ้งเตือน
+            $alert = $obj_SSENSE['alert'];
+        //comparative: ผลวิเคราะห์ข้อความที่มีการเปรียบเทียบแบรนด์/สินค้า
+            $comparative = $obj_SSENSE['comparative'];
+        //associative: ผลวิเคราะห์ข้อความที่มีความคิดเห็นต่อแบรนด์/สินค้า
+            $associative = $obj_SSENSE['associative'];
+            if ($sentiment_polarity_neg == 0) {
+                $sentiment_polarity_neg_text = "false ";
+            } elseif ($sentiment_polarity_neg == 1) {
+                $sentiment_polarity_neg_text = "true";
+            }
+            if ($sentiment_polarity_pos == 0) {
+                $sentiment_polarity_pos_text = "false ";
+            } elseif ($sentiment_polarity_pos == 1) {
+                $sentiment_polarity_pos_text = "true";
+            }
+            echo '<div class="container-fluid">
+                    <div class="container mt-5 mx-auto">
+                        <h4>ผลลัพธ์ SSENSE</h4>
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="card-text">' . $input . '</p>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <p class="card-text">Result: ผลวิเคราะห์ความคิดเห็นว่าเป็นเชิงบวกหรือลบ</p>
+                                <ul class="list-group">
+                                <li class="list-group-item">score : ' . $sentiment_score . '</li>
+                                <li class="list-group-item">polarity : ' . $sentiment_polarity . '</li>
+                                <li class="list-group-item">มีข้อความเชิงลบใช่หรือไม่ : ' . $sentiment_polarity_neg_text. '</li>
+                                <li class="list-group-item">มีข้อความเชิงบวกใช่หรือไม่ : ' . $sentiment_polarity_pos_text . '</li>
+                                <li class="list-group-item">ข้อความแสดงความคิดเห็น : ' . $intention_sentiment . '</li>
+                                </ul>
+                                <p class="card-text">Result: ผลวิเคราะห์จุดประสงค์ของข้อความ</p>
+                                <ul class="list-group">
+                                    <li class="list-group-item">ข้อความในเชิงร้องขอ: ' . $intention_request . '</li>
+                                    <li class="list-group-item">ข้อความในเชิงคําถาม: ' . $intention_question . '</li>
+                                    <li class="list-group-item">ข้อความประกาศหรือโฆษณา: ' . $intention_announcement . '</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>';
+            }
+    }
+    //ระบบตรวจสอบการแสดงความคิดเห็นที่มีลักษณะการรังแกในโลกไซเบอร์ ( Cyber Bully Expression Detector )
+    if (isset($_GET["message"])) {
+        $message = $_GET["message"];
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+        CURLOPT_URL => "https://api.aiforthai.in.th/bully?text=". urlencode($message),
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => "",
         CURLOPT_MAXREDIRS => 10,
@@ -43,132 +199,70 @@ if (isset($_GET["message"])) {
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => "GET",
         CURLOPT_HTTPHEADER => array(
-            "Apikey:$Apikey",
-        ),
-    ));
-
-    $EmoNews = curl_exec($curl);
-    $err = curl_error($curl);
-
-    curl_close($curl);
-
-    if ($err) {
+            "Apikey: $Apikey"
+        )
+        ));
+        
+        $Cyber = curl_exec($curl);
+        $err = curl_error($curl);
+        
+        curl_close($curl);
+        
+        if ($err) {
         echo "cURL Error #:" . $err;
-    } else {
-        //echo $EmoNews;
-        $json_str = $EmoNews;
-        $obj_EmoNews = json_decode($json_str);
-        //echo '<script>console.log(' . json_encode($EmoNews) . ');</script>';
-        // Calculate total score
-        $total_score = $obj_EmoNews->result->surprise + $obj_EmoNews->result->neutral + $obj_EmoNews->result->sadness
-          + $obj_EmoNews->result->pleasant + $obj_EmoNews->result->fear + $obj_EmoNews->result->anger
-          + $obj_EmoNews->result->joy;
-        // Calculate percentages
-          $surprise_percentage = round(($obj_EmoNews->result->surprise / $total_score) * 100, 2);
-          $neutral_percentage = round(($obj_EmoNews->result->neutral / $total_score) * 100, 2);
-          $sadness_percentage = round(($obj_EmoNews->result->sadness / $total_score) * 100, 2);
-          $pleasant_percentage = round(($obj_EmoNews->result->pleasant / $total_score) * 100, 2);
-          $fear_percentage = round(($obj_EmoNews->result->fear / $total_score) * 100, 2);
-          $anger_percentage = round(($obj_EmoNews->result->anger / $total_score) * 100, 2);
-          $joy_percentage = round(($obj_EmoNews->result->joy / $total_score) * 100, 2);
-        echo '<div class="container-fluid">
-            <div class="col-lg-6">
-                <h4>ผลลัพธ์</h4>
+        } else {
+        //echo $Cyber;
+        echo '<script>console.log(' . json_encode($Cyber) . ');</script>';
+            $obj_Cyber = json_decode($Cyber,true); // แปลงข้อมูลที่ได้รับเป็น JSON ให้กลายเป็น Object
+            $bully_word = $obj_Cyber['bully_word'];
+            $bully_type = $obj_Cyber['bully_type'];
+            if ($bully_type == 0) {
+                $bully_type_text = "ข้อความทั่วไปซึ่งไม่มีลักษณะของการรังแก";
+            } elseif ($bully_type == 1) {
+                $bully_type_text = "ข้อความที่มีการกล่าวถึงบุคลิก รูปลักษณ์ และ พฤติกรรม";
+            } elseif ($bully_type == 2) {
+                $bully_type_text = "ข้อความที่เป็นคำด่า คำหยาบคาย";
+            } elseif ($bully_type == 3) {
+                $bully_type_text = "ข้อความคุกคามเกี่ยวกับทางเพศ";
+            } elseif ($bully_type == 4) {
+                $bully_type_text = "ข้อความที่กล่าวถึง เชื้อชาติ กำเนิด และการใช้ชีวิต";
+            } elseif ($bully_type == 5) {
+                $bully_type_text = "ข้อความที่กล่าวถึงสติปัญญา และความฉลาด";
+            } elseif ($bully_type == 6) {
+                $bully_type_text = "ข้อความที่มีการใช้ถ้อยคำรุนแรง การข่มขู่";
+            } else {
+                $bully_type_text = "ไม่สามารถตรวจหาผลลัพธ์ได้";
+            }
+            echo '<div class="container-fluid">
+            <div class="container mt-5 mx-auto">
+                <h4>ผลลัพธ์ Cyber Bully</h4>
                 <div class="card">
                     <div class="card-body">
-                        <p class="card-text">' . $obj_EmoNews->text . '</p>
+                        <p class="card-text">' . $message  . '</p>
                     </div>
                 </div>
                 <div class="card">
                     <div class="card-body">
-                        <p class="card-text">Result:</p>
+                        <p class="card-text">Result: </p>
                         <ul class="list-group">
-                          <li class="list-group-item">Surprise: ' . $surprise_percentage . '%</li>
-                          <li class="list-group-item">Neutral: ' . $neutral_percentage . '%</li>
-                          <li class="list-group-item">Sadness: ' . $sadness_percentage . '%</li>
-                          <li class="list-group-item">Pleasant: ' . $pleasant_percentage . '%</li>
-                          <li class="list-group-item">Fear: ' . $fear_percentage . '%</li>
-                          <li class="list-group-item">Anger: ' . $anger_percentage . '%</li>
-                          <li class="list-group-item">Joy: ' . $joy_percentage . '%</li>
+                        <li class="list-group-item">ผลลัพธ์ : ' . $bully_word    . '</li>
+                        <li class="list-group-item">ประเภท : ' . $bully_type_text    . '</li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>';
-    }
-}
-//CUICUI Survey
-if (isset($_GET["message"])) {
-  $message = $_GET["message"];
-  $curl = curl_init();
-  $post_fields = json_encode(array("text" => $message));
-  $curl = curl_init();
-  curl_setopt_array($curl, array(
-      CURLOPT_URL => 'https://api.aiforthai.in.th/ai9-sentiment',
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_ENCODING => '',
-      CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 0,
-      CURLOPT_FOLLOWLOCATION => true,
-      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_CUSTOMREQUEST => 'POST',
-      CURLOPT_POSTFIELDS => $post_fields,
-      CURLOPT_HTTPHEADER => array(
-          "apiKey: $Apikey",
-          'Content-Type: application/json',
-      ),
-  ));
-  $CUICUI = curl_exec($curl);
-  curl_close($curl);
-  echo $CUICUI;
-  echo '<script>console.log(' . json_encode($CUICUI) . ');</script>';
-}
-//เอสเซนส์ ระบบวิเคราะห์ความคิดเห็นจากข้อความ (Social Sensing: SSENSE)
-if (isset($_GET["message"])) {
-  $message = $_GET["message"];
-  $curl = curl_init();
-  curl_setopt_array($curl, array(
-    CURLOPT_URL => "https://api.aiforthai.in.th/ssense?text=" . urlencode($message),
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_ENCODING => "",
-    CURLOPT_MAXREDIRS => 10,
-    CURLOPT_TIMEOUT => 30,
-    CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-    CURLOPT_CUSTOMREQUEST => "GET",
-    CURLOPT_HTTPHEADER => array(
-        "Apikey: $Apikey",
-    ),
-));
-
-$response  = curl_exec($curl);
-$err = curl_error($curl);
-
-curl_close($curl);
-
-if ($err) {
-    echo "cURL Error #:" . $err;
-} else {
-    //echo $response ;
-    $SSENSE = json_decode($response ,true);
-    echo '<script>console.log(' . json_encode($SSENSE) . ');</script>';
-    echo "Sentiment score: " . $SSENSE['sentiment']['score'] . "<br>";
-    echo "Sentiment polarity: " . $SSENSE['sentiment']['polarity'] . "<br>";
-    echo "Sentiment polarity-neg: " . $SSENSE['sentiment']['polarity-neg'] . "<br>";
-    echo "Sentiment polarity-pos: " . $SSENSE['sentiment']['polarity-pos'] . "<br>";
-    echo "Intention request: " . $SSENSE['intention']['request'] . "<br>";
-    echo "Intention sentiment: " . $SSENSE['intention']['sentiment'] . "<br>";
-    echo "Intention question: " . $SSENSE['intention']['question'] . "<br>";
-    echo "Intention announcement: " . $SSENSE['intention']['announcement'] . "<br>";
-    //echo "Input: " . $SSENSE['preprocess']['input'] . "<br>";
-    //echo "Neg: " . json_encode($SSENSE['preprocess']['neg']) . "<br>";
-    //echo "Pos: " . json_encode($SSENSE['preprocess']['pos']) . "<br>";
-    //echo "Segmented: " . json_encode($SSENSE['preprocess']['segmented']) . "<br>";
-    //echo "Keyword: " . json_encode($SSENSE['preprocess']['keyword']) . "<br>";
-    //echo "Alert: " . json_encode($SSENSE['alert']) . "<br>";
-    //echo "Comparative: " . json_encode($SSENSE['comparative']) . "<br>";
-    echo "Associative: " . json_encode($SSENSE['associative']) . "<br>";
-}
-}
+        }
+    }   
 ?>
 </body>
+<footer class="bg-light py-3 ">
+  <div class="container ">
+    <div class="row">
+      <div class="col-md-6 text-center">
+        <p>© 2023 Kanansak Sujaree 163404140001.</p>
+      </div>
+    </div>
+  </div>
+</footer>
 </html>

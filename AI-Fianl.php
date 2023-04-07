@@ -101,6 +101,7 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
             CURLOPT_CUSTOMREQUEST => "GET",
             CURLOPT_HTTPHEADER => array(
                 "Apikey:$Apikey",
+                "Spellcorrection:$spell_correction" // add Spellcorrection header
             ),
         ));
 
@@ -145,6 +146,11 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
             echo '<div class="container-fluid">
                 <div class="container mt-5 mx-auto">
                     <h4>ผลลัพธ์ EmoNews</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text">' . $obj_EmoNews->text . '</p>
+                        </div>
+                    </div>
                     <div class="card">
                         <div class="card-body">
                             <p class="card-text">Result:</p>

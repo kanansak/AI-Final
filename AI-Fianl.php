@@ -88,13 +88,8 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
     }
 
 //EmoNews บริการทำนายอารมณ์ของผู้อ่าน หลังจากอ่านหัวข้อข่าว โดยใช้เทคนิค fastText
-    if (isset($_GET["message"]) || $spell_correction) {    
-        $message = isset($_GET["message"]) ? $_GET["message"] : ""; 
-        if (isset($spell_correction)) {
-            $message = $spell_correction;
-        }else {
-            $spell_correction = "";
-        }
+    if (isset($_GET["message"])) {
+        $message = $_GET["message"];
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => "https://api.aiforthai.in.th/emonews/prediction?text=" . urlencode($message),
@@ -170,13 +165,8 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
     }
 
 //เอสเซนส์ ระบบวิเคราะห์ความคิดเห็นจากข้อความ (Social Sensing: SSENSE)
-    if (isset($_GET["message"]) || $spell_correction) {    
-        $message = isset($_GET["message"]) ? $_GET["message"] : ""; 
-        if (isset($spell_correction)) {
-            $message = $spell_correction;
-        }else {
-            $spell_correction = "";
-        }
+    if (isset($_GET["message"])) {
+        $message = $_GET["message"];
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => "https://api.aiforthai.in.th/ssense?text=" . urlencode($message),
@@ -259,13 +249,8 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
             }
     }
 //ระบบตรวจสอบการแสดงความคิดเห็นที่มีลักษณะการรังแกในโลกไซเบอร์ ( Cyber Bully Expression Detector )
-    if (isset($_GET["message"]) || $spell_correction) {    
-        $message = isset($_GET["message"]) ? $_GET["message"] : ""; 
-        if (isset($spell_correction)) {
-            $message = $spell_correction;
-        }else {
-            $spell_correction = "";
-        }
+    if (isset($_GET["message"])) {
+        $message = $_GET["message"];
         $curl = curl_init();
         curl_setopt_array($curl, array(
         CURLOPT_URL => "https://api.aiforthai.in.th/bully?text=". urlencode($message),

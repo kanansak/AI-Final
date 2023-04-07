@@ -46,18 +46,19 @@
     });
 </script>
     <!-- ติดตั้ง JavaScript ของ Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script> <!--เป็นการเรียกใช้ไลบรารี jQuery เวอร์ชัน slim -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script><!--เป็นการเรียกใช้ไลบรารี Popper.js ที่ใช้สำหรับให้การแสดงผลแบบ responsive  -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script><!--เป็นการเรียกใช้ไลบรารี Bootstrap เวอร์ชัน 4.0.0 -->
 
     
 <?php
 
 $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
+global $spell_correction;
 //ระบบแปลงภาพเอกสารให้เป็นข้อความ ( Optical Character Recognition: T-OCR )
-    if(isset($_GET["imgName"])) {
+    if(isset($_GET["imgName"])) { //เช็คว่ามีการส่งข้อมูลชื่อไฟล์ภาพมาหรือไม่
         $imgName = $_GET["imgName"]; // set the value of $imgName from the URL parameter
-        $curl = curl_init();
+        $curl = curl_init(); //เริ่มต้นการใช้งาน cURL library
         $img_file = $imgName;
         $data = array("uploadfile" => new CURLFile($img_file, mime_content_type($img_file), basename($img_file)));
 
@@ -76,18 +77,18 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
             )
         ));
 
-        $OCR = curl_exec($curl);
-        $err = curl_error($curl);
+        $OCR = curl_exec($curl); //ส่ง request ไปยัง API และเก็บ response ที่ได้กลับมาเก็บไว้ในตัวแปร $OCR
+        $err = curl_error($curl); //เก็บ error message หากมี error ในการส่ง request ไปยัง API
 
-        curl_close($curl);
+        curl_close($curl); // ปิดการเชื่อมต่อ cURL
 
-        if ($err) {
+        if ($err) { //ตรวจสอบว่ามี error หรือไม่ ถ้ามีก็แสดง error message ออกมา
             echo "cURL Error #:" . $err;
         } else {
             //echo $OCR;
-            $obj_OCR = json_decode($OCR); // แปลง response เป็น object
+            $obj_OCR = json_decode($OCR); // แปลง response ที่ได้รับมาจาก API จาก JSON string เป็น object เพื่อให้ง่ายต่อการเข้าถึงข้อมูล
             //echo '<img src="'.$imgName.'">';
-            $spell_correction = $obj_OCR->Spellcorrection; // store Spellcorrection in variable
+            $spell_correction = $obj_OCR->Spellcorrection; // เก็บค่า Spellcorrection จาก response
             //echo $spell_correction; // display Spellcorrection
         }
     }
@@ -111,7 +112,7 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
             CURLOPT_CUSTOMREQUEST => "GET",
             CURLOPT_HTTPHEADER => array(
                 "Apikey:$Apikey",
-                "Spellcorrection:$spell_correction" // add Spellcorrection header
+                //"Spellcorrection:$spell_correction" // add Spellcorrection header
             ),
         ));
 
@@ -294,13 +295,18 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
         curl_close($curl);
         
         if ($err) {
-        echo "cURL Error #:" . $err;
+            echo "cURL Error #:" . $err;
         } else {
         //echo $Cyber;
-        echo '<script>console.log(' . json_encode($Cyber) . ');</script>';
-            $obj_Cyber = json_decode($Cyber,true); // แปลงข้อมูลที่ได้รับเป็น JSON ให้กลายเป็น Object
-            $bully_word = $obj_Cyber['bully_word'];
-            $bully_type = $obj_Cyber['bully_type'];
+        //echo '<script>console.log(' . json_encode($Cyber) . ');</script>';
+        $obj_Cyber = json_decode($Cyber, true); // แปลงข้อมูลที่ได้รับเป็น JSON ให้กลายเป็น associative array
+        
+        if (is_array($obj_Cyber)) {
+            $bully_word = $obj_Cyber['bully_word'][0]; // ใส่ index 0 เพื่อให้ได้ค่าเป็น string เดียว
+            $bully_type = $obj_Cyber['bully_type'][0]; // ใส่ index 0 เพื่อให้ได้ค่าเป็น integer เดียว
+        } else {
+            echo "Error: Invalid response format";
+        }
             if ($bully_type == 0) {
                 $bully_type_text = "ข้อความทั่วไปซึ่งไม่มีลักษณะของการรังแก";
             } elseif ($bully_type == 1) {

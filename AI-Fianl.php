@@ -24,13 +24,17 @@
 </div>
 <!-- อัพโหลดรูป -->
 <div class="container">
-  <div class="row">
-    <div class="col-md-6 offset-md-3">
-        <form action="up.php" method="post" enctype="multipart/form-data">
-            Select image to upload:
-            <input type="file" name="fileToUpload" id="fileToUpload">
-            <input type="submit" value="Upload Image" name="submit">
-        </form>
+  <div class="row justify-content-center">
+    <div class="col-md-6">
+      <form action="up.php" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="fileToUpload">Select image to upload:</label>
+          <input type="file" class="form-control-file" id="fileToUpload" name="fileToUpload">
+        </div>
+        <div class="text-center">
+          <button type="submit" class="btn btn-primary">Upload</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -266,7 +270,7 @@ global $spell_correction;
             }
     }
 //ระบบตรวจสอบการแสดงความคิดเห็นที่มีลักษณะการรังแกในโลกไซเบอร์ ( Cyber Bully Expression Detector )
-    if (isset($_GET["message"]) || $spell_correction) {    
+/*    if (isset($_GET["message"]) || $spell_correction) {    
         $message = isset($_GET["message"]) ? $_GET["message"] : ""; 
         if (isset($spell_correction)) {
             $message = $spell_correction;
@@ -335,7 +339,7 @@ global $spell_correction;
             </div>
         </div>';
         }
-    }   
+    }   */
 ?>
 </body>
 <footer class="bg-light py-3 ">

@@ -124,21 +124,27 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
             echo "cURL Error #:" . $err;
         } else {
             //echo $EmoNews;
-            $json_str = $EmoNews;
-            $obj_EmoNews = json_decode($json_str);
-            //echo '<script>console.log(' . json_encode($EmoNews) . ');</script>';
+            //$json_str = $EmoNews;
+            $obj_EmoNews = json_decode($EmoNews ,true);
+            echo '<script>console.log(' . json_encode($EmoNews) . ');</script>';
+            $surprise_score = $obj_EmoNews['result']['surprise'];
+            $neutral_score = $obj_EmoNews['result']['neutral'];
+            $sadness_score = $obj_EmoNews['result']['sadness'];
+            $pleasant_score = $obj_EmoNews['result']['pleasant'];
+            $fear_score = $obj_EmoNews['result']['fear'];
+            $anger_score = $obj_EmoNews['result']['anger'];
+            $joy_score = $obj_EmoNews['result']['joy'];
             // Calculate total score
-            $total_score = $obj_EmoNews->result->surprise + $obj_EmoNews->result->neutral + $obj_EmoNews->result->sadness
-            + $obj_EmoNews->result->pleasant + $obj_EmoNews->result->fear + $obj_EmoNews->result->anger
-            + $obj_EmoNews->result->joy;
+            $total_score = $surprise_score + $neutral_score + $sadness_score
+            + $pleasant_score + $fear_score + $anger_score + $joy_score;
             // Calculate percentages
-            $surprise_percentage = round(($obj_EmoNews->result->surprise / $total_score) * 100, 2);
-            $neutral_percentage = round(($obj_EmoNews->result->neutral / $total_score) * 100, 2);
-            $sadness_percentage = round(($obj_EmoNews->result->sadness / $total_score) * 100, 2);
-            $pleasant_percentage = round(($obj_EmoNews->result->pleasant / $total_score) * 100, 2);
-            $fear_percentage = round(($obj_EmoNews->result->fear / $total_score) * 100, 2);
-            $anger_percentage = round(($obj_EmoNews->result->anger / $total_score) * 100, 2);
-            $joy_percentage = round(($obj_EmoNews->result->joy / $total_score) * 100, 2);
+            $surprise_percentage = round(($surprise_score / $total_score) * 100, 2);
+            $neutral_percentage = round(($neutral_score / $total_score) * 100, 2);
+            $sadness_percentage = round(($sadness_score / $total_score) * 100, 2);
+            $pleasant_percentage = round(($pleasant_score / $total_score) * 100, 2);
+            $fear_percentage = round(($fear_score / $total_score) * 100, 2);
+            $anger_percentage = round(($anger_score / $total_score) * 100, 2);
+            $joy_percentage = round(($joy_score / $total_score) * 100, 2);
             echo '<div class="container-fluid">
                 <div class="container mt-5 mx-auto">
                     <h4>ผลลัพธ์ </h4>
@@ -152,11 +158,6 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
             echo '<div class="container-fluid">
                 <div class="container mt-5 mx-auto">
                     <h4>ผลลัพธ์ EmoNews</h4>
-                    <div class="card">
-                        <div class="card-body">
-                            <p class="card-text">' . $obj_EmoNews->text . '</p>
-                        </div>
-                    </div>
                     <div class="card">
                         <div class="card-body">
                             <p class="card-text">Result:</p>
@@ -207,6 +208,7 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
             echo "cURL Error #:" . $err;
         } else {
             //echo $SSENSE ;
+            echo '<script>console.log(' . json_encode($SSENSE) . ');</script>';
             $obj_SSENSE = json_decode($SSENSE ,true);
         //sentiment : ผลวิเคราะห์ความคิดเห็นว่าเป็นเชิงบวกหรือลบ
             $sentiment_score = $obj_SSENSE['sentiment']['score'];
@@ -270,8 +272,6 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
         $message = isset($_GET["message"]) ? $_GET["message"] : ""; 
         if (isset($spell_correction)) {
             $message = $spell_correction;
-        }else {
-            $spell_correction = "";
         }
         $curl = curl_init();
         curl_setopt_array($curl, array(

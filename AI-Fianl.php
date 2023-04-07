@@ -21,6 +21,19 @@
         <button type="submit" class="btn btn-primary">ส่งข้อความ</button>
     </form>
 </div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+      <form action="up.php" method="post" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="exampleFormControlFile1">Select image to upload:</label>
+          <input type="file" class="form-control-file" id="exampleFormControlFile1" name="fileToUpload">
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+      </form>
+    </div>
+  </div>
+</div>
 <script>
     // เพิ่ม event listener ให้กับ textarea เพื่อนับจำนวนตัวอักษรที่ใส่ไป
     document.getElementById("message").addEventListener("input", function() {
@@ -34,12 +47,58 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
 <?php
-    $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
+$Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
+//ระบบแปลงภาพเอกสารให้เป็นข้อความ ( Optical Character Recognition: T-OCR )
+    if(isset($_GET["imgName"])) {
+        $imgName = $_GET["imgName"]; // set the value of $imgName from the URL parameter
+        $curl = curl_init();
+        $img_file = $imgName;
+        $data = array("uploadfile" => new CURLFile($img_file, mime_content_type($img_file), basename($img_file)));
 
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://api.aiforthai.in.th/ocr",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => $data,
+            CURLOPT_HTTPHEADER => array(
+                "Content-Type: multipart/form-data",
+                "apikey: $Apikey"
+            )
+        ));
+
+        $OCR = curl_exec($curl);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($err) {
+            echo "cURL Error #:" . $err;
+        } else {
+            //echo $OCR;
+            $obj_OCR = json_decode($OCR); // แปลง response เป็น object
+            //echo '<img src="'.$imgName.'">';
+            $spell_correction = $obj_OCR->Spellcorrection; // store Spellcorrection in variable
+            //echo $spell_correction; // display Spellcorrection
+            echo '<div class="container-fluid">
+                <div class="container mt-5 mx-auto">
+                    <h4>ผลลัพธ์ </h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text">' . $spell_correction . '</p>
+                        </div>
+                    </div>
+                </div>
+            </div>';
+        }
+    }
+
+//EmoNews บริการทำนายอารมณ์ของผู้อ่าน หลังจากอ่านหัวข้อข่าว โดยใช้เทคนิค fastText
     if (isset($_GET["message"])) {
         $message = $_GET["message"];
-
-    //EmoNews บริการทำนายอารมณ์ของผู้อ่าน หลังจากอ่านหัวข้อข่าว โดยใช้เทคนิค fastText
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => "https://api.aiforthai.in.th/emonews/prediction?text=" . urlencode($message),
@@ -51,6 +110,7 @@
             CURLOPT_CUSTOMREQUEST => "GET",
             CURLOPT_HTTPHEADER => array(
                 "Apikey:$Apikey",
+                "Spellcorrection:$spell_correction" // add Spellcorrection header
             ),
         ));
 
@@ -104,7 +164,8 @@
             </div>';
         }
     }
-    //เอสเซนส์ ระบบวิเคราะห์ความคิดเห็นจากข้อความ (Social Sensing: SSENSE)
+
+//เอสเซนส์ ระบบวิเคราะห์ความคิดเห็นจากข้อความ (Social Sensing: SSENSE)
     if (isset($_GET["message"])) {
         $message = $_GET["message"];
         $curl = curl_init();
@@ -168,11 +229,6 @@
                         <h4>ผลลัพธ์ SSENSE</h4>
                         <div class="card">
                             <div class="card-body">
-                                <p class="card-text">' . $input . '</p>
-                            </div>
-                        </div>
-                        <div class="card">
-                            <div class="card-body">
                                 <p class="card-text">Result: ผลวิเคราะห์ความคิดเห็นว่าเป็นเชิงบวกหรือลบ</p>
                                 <ul class="list-group">
                                 <li class="list-group-item">score : ' . $sentiment_score . '</li>
@@ -193,7 +249,7 @@
                 </div>';
             }
     }
-    //ระบบตรวจสอบการแสดงความคิดเห็นที่มีลักษณะการรังแกในโลกไซเบอร์ ( Cyber Bully Expression Detector )
+//ระบบตรวจสอบการแสดงความคิดเห็นที่มีลักษณะการรังแกในโลกไซเบอร์ ( Cyber Bully Expression Detector )
     if (isset($_GET["message"])) {
         $message = $_GET["message"];
         $curl = curl_init();
@@ -243,11 +299,6 @@
             echo '<div class="container-fluid">
             <div class="container mt-5 mx-auto">
                 <h4>ผลลัพธ์ Cyber Bully</h4>
-                <div class="card">
-                    <div class="card-body">
-                        <p class="card-text">' . $message  . '</p>
-                    </div>
-                </div>
                 <div class="card">
                     <div class="card-body">
                         <p class="card-text">Result: </p>

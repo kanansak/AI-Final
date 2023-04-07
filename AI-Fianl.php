@@ -210,8 +210,10 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
             //echo $SSENSE ;
             echo '<script>console.log(' . json_encode($SSENSE) . ');</script>';
             $obj_SSENSE = json_decode($SSENSE ,true);
+            $sentiment_score = $obj_SSENSE->sentiment->score;
+echo $sentiment_score;
         //sentiment : ผลวิเคราะห์ความคิดเห็นว่าเป็นเชิงบวกหรือลบ
-            $sentiment_score = $obj_SSENSE['sentiment']['score'];
+            //$sentiment_score = $obj_SSENSE['sentiment']['score'];
             $sentiment_polarity = $obj_SSENSE['sentiment']['polarity'];
             $sentiment_polarity_neg = $obj_SSENSE['sentiment']['polarity-neg'];
             $sentiment_polarity_pos = $obj_SSENSE['sentiment']['polarity-pos'];

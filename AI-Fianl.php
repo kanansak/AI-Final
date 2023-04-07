@@ -212,10 +212,8 @@ global $spell_correction;
             //echo $SSENSE ;
             echo '<script>console.log(' . json_encode($SSENSE) . ');</script>';
             $obj_SSENSE = json_decode($SSENSE ,true);
-            $sentiment_score = $obj_SSENSE->sentiment->score;
-echo $sentiment_score;
         //sentiment : ผลวิเคราะห์ความคิดเห็นว่าเป็นเชิงบวกหรือลบ
-            //$sentiment_score = $obj_SSENSE['sentiment']['score'];
+            $sentiment_score = $obj_SSENSE['sentiment']['score'];
             $sentiment_polarity = $obj_SSENSE['sentiment']['polarity'];
             $sentiment_polarity_neg = $obj_SSENSE['sentiment']['polarity-neg'];
             $sentiment_polarity_pos = $obj_SSENSE['sentiment']['polarity-pos'];
@@ -272,7 +270,7 @@ echo $sentiment_score;
             }
     }
 //ระบบตรวจสอบการแสดงความคิดเห็นที่มีลักษณะการรังแกในโลกไซเบอร์ ( Cyber Bully Expression Detector )
-    if (isset($_GET["message"]) || $spell_correction) {    
+/*    if (isset($_GET["message"]) || $spell_correction) {    
         $message = isset($_GET["message"]) ? $_GET["message"] : ""; 
         if (isset($spell_correction)) {
             $message = $spell_correction;
@@ -341,7 +339,7 @@ echo $sentiment_score;
             </div>
         </div>';
         }
-    }   
+    }   */
 ?>
 </body>
 <footer class="bg-light py-3 ">

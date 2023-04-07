@@ -24,21 +24,16 @@
 </div>
 <!-- อัพโหลดรูป -->
 <div class="container">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <form action="up.php" method="post" enctype="multipart/form-data">
-        <div class="form-group">
-          <label for="fileToUpload">Select image to upload:</label>
-          <input type="file" class="form-control-file" id="fileToUpload" name="fileToUpload">
-        </div>
-        <div class="">
-          <button type="submit" class="btn btn-primary">Upload</button>
-        </div>
-      </form>
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+        <form action="up.php" method="post" enctype="multipart/form-data">
+            Select image to upload:
+            <input type="file" name="fileToUpload" id="fileToUpload">
+            <input type="submit" value="Upload Image" name="submit">
+        </form>
     </div>
   </div>
 </div>
-
 
 <script>
     // เพิ่ม event listener ให้กับ textarea เพื่อนับจำนวนตัวอักษรที่ใส่ไป
@@ -53,7 +48,10 @@
 
     
 <?php
+<<<<<<< HEAD
 
+=======
+>>>>>>> parent of 985eb37 (Update AI-Fianl.php)
 $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
 //$spell_correction = ""; //ระบบแปลงภาพเอกสารให้เป็นข้อความ ( Optical Character Recognition: T-OCR )
     if(isset($_GET["imgName"])) {

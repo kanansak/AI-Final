@@ -48,10 +48,6 @@
 
     
 <?php
-<<<<<<< HEAD
-
-=======
->>>>>>> parent of 985eb37 (Update AI-Fianl.php)
 $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
 //$spell_correction = ""; //ระบบแปลงภาพเอกสารให้เป็นข้อความ ( Optical Character Recognition: T-OCR )
     if(isset($_GET["imgName"])) {

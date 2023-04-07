@@ -48,8 +48,9 @@
 
     
 <?php
+
 $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
-//$spell_correction = ""; //ระบบแปลงภาพเอกสารให้เป็นข้อความ ( Optical Character Recognition: T-OCR )
+//ระบบแปลงภาพเอกสารให้เป็นข้อความ ( Optical Character Recognition: T-OCR )
     if(isset($_GET["imgName"])) {
         $imgName = $_GET["imgName"]; // set the value of $imgName from the URL parameter
         $curl = curl_init();
@@ -88,8 +89,13 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
     }
 
 //EmoNews บริการทำนายอารมณ์ของผู้อ่าน หลังจากอ่านหัวข้อข่าว โดยใช้เทคนิค fastText
-    if (isset($_GET["message"])) {
-        $message = $_GET["message"];
+    if (isset($_GET["message"]) || $spell_correction) {    
+        $message = isset($_GET["message"]) ? $_GET["message"] : ""; 
+        if (isset($spell_correction)) {
+            $message = $spell_correction;
+        }else {
+            $spell_correction = "";
+        }
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => "https://api.aiforthai.in.th/emonews/prediction?text=" . urlencode($message),
@@ -114,25 +120,21 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
             echo "cURL Error #:" . $err;
         } else {
             //echo $EmoNews;
-            $obj_EmoNews = json_decode($EmoNews ,true);
-            $surprise_score = $obj_EmoNews['result']['surprise'];
-            $neutral_score = $obj_EmoNews['result']['neutral'];
-            $sadness_score = $obj_EmoNews['result']['sadness'];
-            $pleasant_score = $obj_EmoNews['result']['pleasant'];
-            $fear_score = $obj_EmoNews['result']['fear'];
-            $anger_score = $obj_EmoNews['result']['anger'];
-            $joy_score = $obj_EmoNews['result']['joy'];
+            $json_str = $EmoNews;
+            $obj_EmoNews = json_decode($json_str);
             //echo '<script>console.log(' . json_encode($EmoNews) . ');</script>';
             // Calculate total score
-            $total_score = $surprise_score + $neutral_score + $sadness_score + $pleasant_score + $fear_score + $anger_score + $joy_score;
+            $total_score = $obj_EmoNews->result->surprise + $obj_EmoNews->result->neutral + $obj_EmoNews->result->sadness
+            + $obj_EmoNews->result->pleasant + $obj_EmoNews->result->fear + $obj_EmoNews->result->anger
+            + $obj_EmoNews->result->joy;
             // Calculate percentages
-            $surprise_percentage = round(($surprise_score / $total_score) * 100, 2);
-            $neutral_percentage = round(($neutral_score / $total_score) * 100, 2);
-            $sadness_percentage = round(($sadness_score / $total_score) * 100, 2);
-            $pleasant_percentage = round(($pleasant_score / $total_score) * 100, 2);
-            $fear_percentage = round(($fear_score / $total_score) * 100, 2);
-            $anger_percentage = round(($anger_score / $total_score) * 100, 2);
-            $joy_percentage = round(($joy_score / $total_score) * 100, 2);
+            $surprise_percentage = round(($obj_EmoNews->result->surprise / $total_score) * 100, 2);
+            $neutral_percentage = round(($obj_EmoNews->result->neutral / $total_score) * 100, 2);
+            $sadness_percentage = round(($obj_EmoNews->result->sadness / $total_score) * 100, 2);
+            $pleasant_percentage = round(($obj_EmoNews->result->pleasant / $total_score) * 100, 2);
+            $fear_percentage = round(($obj_EmoNews->result->fear / $total_score) * 100, 2);
+            $anger_percentage = round(($obj_EmoNews->result->anger / $total_score) * 100, 2);
+            $joy_percentage = round(($obj_EmoNews->result->joy / $total_score) * 100, 2);
             echo '<div class="container-fluid">
                 <div class="container mt-5 mx-auto">
                     <h4>ผลลัพธ์ </h4>
@@ -171,8 +173,13 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
     }
 
 //เอสเซนส์ ระบบวิเคราะห์ความคิดเห็นจากข้อความ (Social Sensing: SSENSE)
-    if (isset($_GET["message"])) {
-        $message = $_GET["message"];
+    if (isset($_GET["message"]) || $spell_correction) {    
+        $message = isset($_GET["message"]) ? $_GET["message"] : ""; 
+        if (isset($spell_correction)) {
+            $message = $spell_correction;
+        }else {
+            $spell_correction = "";
+        }
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => "https://api.aiforthai.in.th/ssense?text=" . urlencode($message),
@@ -255,8 +262,13 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
             }
     }
 //ระบบตรวจสอบการแสดงความคิดเห็นที่มีลักษณะการรังแกในโลกไซเบอร์ ( Cyber Bully Expression Detector )
-    if (isset($_GET["message"])) {
-        $message = $_GET["message"];
+    if (isset($_GET["message"]) || $spell_correction) {    
+        $message = isset($_GET["message"]) ? $_GET["message"] : ""; 
+        if (isset($spell_correction)) {
+            $message = $spell_correction;
+        }else {
+            $spell_correction = "";
+        }
         $curl = curl_init();
         curl_setopt_array($curl, array(
         CURLOPT_URL => "https://api.aiforthai.in.th/bully?text=". urlencode($message),

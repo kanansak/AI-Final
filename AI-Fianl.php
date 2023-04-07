@@ -267,7 +267,7 @@ echo $sentiment_score;
             }
     }
 //ระบบตรวจสอบการแสดงความคิดเห็นที่มีลักษณะการรังแกในโลกไซเบอร์ ( Cyber Bully Expression Detector )
-/*    if (isset($_GET["message"]) || $spell_correction) {    
+    if (isset($_GET["message"]) || $spell_correction) {    
         $message = isset($_GET["message"]) ? $_GET["message"] : ""; 
         if (isset($spell_correction)) {
             $message = $spell_correction;
@@ -336,7 +336,7 @@ echo $sentiment_score;
             </div>
         </div>';
         }
-    }   */
+    }   
 ?>
 </body>
 <footer class="bg-light py-3 ">

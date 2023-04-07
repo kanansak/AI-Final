@@ -10,6 +10,7 @@
 </head>
 
 <body>
+<!-- รับข้อความ -->
 <div class="container mt-5">
     <h1>AI การวิเคราะห์ข้อความ</h1>
     <form action="" method="GET">
@@ -21,31 +22,31 @@
         <button type="submit" class="btn btn-primary">ส่งข้อความ</button>
     </form>
 </div>
+<!-- อัพโหลดรูป -->
 <div class="container">
   <div class="row">
     <div class="col-md-6 offset-md-3">
-      <form action="up.php" method="post" enctype="multipart/form-data">
-        <div class="form-group">
-          <label for="exampleFormControlFile1">Select image to upload:</label>
-          <input type="file" class="form-control-file" id="exampleFormControlFile1" name="fileToUpload">
-        </div>
-        <button type="submit" class="btn btn-primary">Upload</button>
-      </form>
+        <form action="up.php" method="post" enctype="multipart/form-data">
+            Select image to upload:
+            <input type="file" name="fileToUpload" id="fileToUpload">
+            <input type="submit" value="Upload Image" name="submit">
+        </form>
     </div>
   </div>
 </div>
+
 <script>
     // เพิ่ม event listener ให้กับ textarea เพื่อนับจำนวนตัวอักษรที่ใส่ไป
     document.getElementById("message").addEventListener("input", function() {
         document.getElementById("charNum").textContent = this.value.length;
     });
 </script>
-
     <!-- ติดตั้ง JavaScript ของ Bootstrap -->
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
+    
 <?php
 $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
 //ระบบแปลงภาพเอกสารให้เป็นข้อความ ( Optical Character Recognition: T-OCR )
@@ -83,16 +84,6 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
             //echo '<img src="'.$imgName.'">';
             $spell_correction = $obj_OCR->Spellcorrection; // store Spellcorrection in variable
             //echo $spell_correction; // display Spellcorrection
-            echo '<div class="container-fluid">
-                <div class="container mt-5 mx-auto">
-                    <h4>ผลลัพธ์ </h4>
-                    <div class="card">
-                        <div class="card-body">
-                            <p class="card-text">' . $spell_correction . '</p>
-                        </div>
-                    </div>
-                </div>
-            </div>';
         }
     }
 
@@ -140,6 +131,16 @@ $Apikey = "etTW2zhw5WLwgAoo2HkfnePopSOP52sJ";
             $fear_percentage = round(($obj_EmoNews->result->fear / $total_score) * 100, 2);
             $anger_percentage = round(($obj_EmoNews->result->anger / $total_score) * 100, 2);
             $joy_percentage = round(($obj_EmoNews->result->joy / $total_score) * 100, 2);
+            echo '<div class="container-fluid">
+                <div class="container mt-5 mx-auto">
+                    <h4>ผลลัพธ์ </h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <p class="card-text"> '.$message.'</p>
+                        </div>
+                    </div>
+                </div>
+            </div>';
             echo '<div class="container-fluid">
                 <div class="container mt-5 mx-auto">
                     <h4>ผลลัพธ์ EmoNews</h4>
@@ -321,7 +322,7 @@ if (isset($_GET["message"]) || $spell_correction) {
   <div class="container ">
     <div class="row">
       <div class="col-md-6 text-center">
-        <p>© 2023 Kanansak Sujaree 163404140001.</p>
+        <p>© 2023 Kanansak Sujaree 163404140001</p>
       </div>
     </div>
   </div>

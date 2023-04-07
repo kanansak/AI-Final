@@ -24,17 +24,13 @@
 </div>
 <!-- อัพโหลดรูป -->
 <div class="container">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
-      <form action="up.php" method="post" enctype="multipart/form-data">
-        <div class="form-group">
-          <label for="fileToUpload">Select image to upload:</label>
-          <input type="file" class="form-control-file" id="fileToUpload" name="fileToUpload">
-        </div>
-        <div class="text-center">
-          <button type="submit" class="btn btn-primary">Upload</button>
-        </div>
-      </form>
+  <div class="row">
+    <div class="col-md-6 offset-md-3">
+        <form action="up.php" method="post" enctype="multipart/form-data">
+            Select image to upload:
+            <input type="file" name="fileToUpload" id="fileToUpload">
+            <input type="submit" value="Upload Image" name="submit">
+        </form>
     </div>
   </div>
 </div>
@@ -211,9 +207,10 @@ global $spell_correction;
             //echo $SSENSE ;
             echo '<script>console.log(' . json_encode($SSENSE) . ');</script>';
             $obj_SSENSE = json_decode($SSENSE ,true);
-
+            $sentiment_score = $obj_SSENSE->sentiment->score;
+echo $sentiment_score;
         //sentiment : ผลวิเคราะห์ความคิดเห็นว่าเป็นเชิงบวกหรือลบ
-            $sentiment_score = $obj_SSENSE['sentiment']['score'];
+            //$sentiment_score = $obj_SSENSE['sentiment']['score'];
             $sentiment_polarity = $obj_SSENSE['sentiment']['polarity'];
             $sentiment_polarity_neg = $obj_SSENSE['sentiment']['polarity-neg'];
             $sentiment_polarity_pos = $obj_SSENSE['sentiment']['polarity-pos'];

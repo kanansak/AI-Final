@@ -49,7 +49,7 @@ if ($uploadOk == 0) {
   // echo "acc link : $actual_link<br>"; // can show server link here
   $actual_link_removeTail = substr($actual_link,0,-7);
   // echo "acc link : $actual_link_removeTail "; // remove '/.up.php' then replace with 'TFOOD2.php?imgName=xxx.jpg'
-  header('Location: '.$actual_link_removeTail.'/AI-Fianl.php?imgName='.$imgName); // redirect to previous page with image name
+  header('Location: '.$actual_link_removeTail.'/index.php?imgName='.$imgName); // redirect to previous page with image name
   } else {
     echo "Sorry, there was an error uploading your file.";
   }

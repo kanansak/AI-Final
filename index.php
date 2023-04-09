@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8"> <!--กำหนดการเข้ารหัสของข้อความในหน้าเว็บเป็น UTF-8 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- ติดตั้ง Bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
@@ -95,11 +95,11 @@ global $spell_correction;
     }
 
 //EmoNews บริการทำนายอารมณ์ของผู้อ่าน หลังจากอ่านหัวข้อข่าว โดยใช้เทคนิค fastText
-    if (isset($_GET["message"]) || $spell_correction) {    
+    if (isset($_GET["message"]) || $spell_correction) {   //เช็คว่าตัวแปร $_GET["message"] หรือ $spell_correction มีค่าเป็นจริงหรือไม่ 
         $message = isset($_GET["message"]) ? $_GET["message"] : ""; 
-        if (isset($spell_correction)) {
+        if (isset($spell_correction)) { //เช็คว่าตัวแปร $spell_correction มีค่าหรือไม่ ถ้ามีก็ให้ $message เท่ากับค่าของ $spell_correction
             $message = $spell_correction;
-        }else {
+        }else { //เป็นการกำหนดให้ตัวแปร $spell_correction เป็นค่าว่าง 
             $spell_correction = "";
         }
         $curl = curl_init();
@@ -113,7 +113,6 @@ global $spell_correction;
             CURLOPT_CUSTOMREQUEST => "GET",
             CURLOPT_HTTPHEADER => array(
                 "Apikey:$Apikey",
-                //"Spellcorrection:$spell_correction" // add Spellcorrection header
             ),
         ));
 
@@ -127,7 +126,7 @@ global $spell_correction;
         } else {
             //echo $EmoNews;
             //$json_str = $EmoNews;
-            $obj_EmoNews = json_decode($EmoNews ,true);
+            $obj_EmoNews = json_decode($EmoNews ,true); // แปลง response ที่ได้รับมาจาก API จาก JSON string เป็น object เพื่อให้ง่ายต่อการเข้าถึงข้อมูล
             echo '<script>console.log(' . json_encode($EmoNews) . ');</script>';
             $surprise_score = $obj_EmoNews['result']['surprise'];
             $neutral_score = $obj_EmoNews['result']['neutral'];
@@ -211,7 +210,7 @@ global $spell_correction;
         } else {
             //echo $SSENSE ;
             echo '<script>console.log(' . json_encode($SSENSE) . ');</script>';
-            $obj_SSENSE = json_decode($SSENSE ,true);
+            $obj_SSENSE = json_decode($SSENSE ,true);// แปลง response ที่ได้รับมาจาก API จาก JSON string เป็น object เพื่อให้ง่ายต่อการเข้าถึงข้อมูล
         //sentiment : ผลวิเคราะห์ความคิดเห็นว่าเป็นเชิงบวกหรือลบ
             $sentiment_score = $obj_SSENSE['sentiment']['score'];
             $sentiment_polarity = $obj_SSENSE['sentiment']['polarity'];
